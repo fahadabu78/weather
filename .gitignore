@@ -1,0 +1,13 @@
+# Virtual environments
+.conda/
+env/
+venv/
+.venv/
+
+# Editor directories
+.vscode/
+.idea/
+
+# OS generated files
+.DS_Store
+Thumbs.db

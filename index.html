@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SkyPulse Weather - Modern Weather Forecast Dashboard</title>
+  <meta name="description" content="A modern, responsive weather forecast dashboard web application built with HTML5, CSS3, JavaScript, Bootstrap 5, Chart.js, and Leaflet map.">
+  
+  <!-- Google Fonts: Outfit & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  
+  <!-- Custom Stylesheet -->
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- ========================================================================== -->
+  <!-- Top Glassmorphic Navigation Bar                                            -->
+  <!-- ========================================================================== -->
+  <nav class="navbar navbar-expand-lg sticky-top glass-nav px-3 px-lg-4 py-2">
+    <div class="container-fluid">
+      <!-- Brand Logo -->
+      <a class="navbar-brand brand-logo me-4" href="#" id="nav-brand">
+        <i class="fas fa-cloud-sun-rain text-info"></i>
+        <span>SkyPulse</span>
+        <span class="badge glass-pill text-info ms-1">Weather Dashboard</span>
+      </a>
+
+      <!-- Mobile Navbar Toggle -->
+      <button class="navbar-toggler border-0 text-white" type="button" data-bs-toggle="collapse" data-bs-target="#skyPulseNavbar">
+        <i class="fas fa-bars fs-4"></i>
+      </button>
+
+      <!-- Collapsible Nav Items & Global Tools -->
+      <div class="collapse navbar-collapse" id="skyPulseNavbar">
+        <!-- Main Section Nav Tabs -->
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0 nav-pills gap-1">
+          <li class="nav-item">
+            <button class="nav-tab-btn active" data-tab="tab-home">
+              <i class="fas fa-house-chimney"></i> Home
+            </button>
+          </li>
+          <li class="nav-item">
+            <button class="nav-tab-btn" data-tab="tab-current">
+              <i class="fas fa-temperature-three-quarters"></i> Current
+            </button>
+          </li>
+          <li class="nav-item">
+            <button class="nav-tab-btn" data-tab="tab-hourly">
+              <i class="fas fa-clock"></i> Hourly
+            </button>
+          </li>
+          <li class="nav-item">
+            <button class="nav-tab-btn" data-tab="tab-weekly">
+              <i class="fas fa-calendar-week"></i> 7-Day
+            </button>
+          </li>
+          <li class="nav-item">
+            <button class="nav-tab-btn" data-tab="tab-aqi">
+              <i class="fas fa-wind"></i> Air Quality
+            </button>
+          </li>
+          <li class="nav-item">
+            <button class="nav-tab-btn" data-tab="tab-details">
+              <i class="fas fa-circle-info"></i> Details
+            </button>
+          </li>
+          <li class="nav-item">
+            <button class="nav-tab-btn" data-tab="tab-map">
+              <i class="fas fa-map-location-dot"></i> Map
+            </button>
+          </li>
+          <li class="nav-item">
+            <button class="nav-tab-btn" data-tab="tab-favs">
+              <i class="fas fa-heart"></i> Favourites
+            </button>
+          </li>
+          <li class="nav-item">
+            <button class="nav-tab-btn" data-tab="tab-history">
+              <i class="fas fa-history"></i> History
+            </button>
+          </li>
+          <li class="nav-item">
+            <button class="nav-tab-btn" data-tab="tab-settings">
+              <i class="fas fa-gear"></i> Settings
+            </button>
+          </li>
+          <li class="nav-item">
+            <button class="nav-tab-btn" data-tab="tab-about">
+              <i class="fas fa-graduation-cap"></i> About
+            </button>
+          </li>
+        </ul>
+
+        <!-- Global Header Controls: Unit Switch & Theme Toggle -->
+        <div class="d-flex align-items-center gap-2 mt-2 mt-lg-0">
+          <button class="glass-btn" id="btn-unit-toggle" title="Switch °C / °F">
+            <i class="fas fa-temperature-empty"></i> <span id="unit-label">°C</span>
+          </button>
+          <button class="glass-btn" id="btn-theme-toggle" title="Toggle Dark/Light Mode">
+            <i class="fas fa-moon" id="theme-icon"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Application Container -->
+  <div class="container-fluid px-3 px-md-4 py-4">
+
+    <!-- Global Search & Location Bar -->
+    <div class="row justify-content-center mb-4">
+      <div class="col-12 col-md-10 col-lg-8">
+        <div class="glass-card py-2 px-3">
+          <div class="row g-2 align-items-center">
+            <div class="col">
+              <div class="input-group">
+                <span class="input-group-text bg-transparent border-0 text-muted ps-2">
+                  <i class="fas fa-magnifying-glass fs-5"></i>
+                </span>
+                <input type="text" id="input-city-search" class="form-control glass-input border-0" placeholder="Search city weather (e.g., London, Tokyo, New Delhi)...">
+              </div>
+            </div>
+            <div class="col-auto d-flex gap-2">
+              <button class="glass-btn glass-btn-active" id="btn-search-city">
+                <span>Search</span>
+              </button>
+              <button class="glass-btn" id="btn-current-location" title="Use My Current GPS Location">
+                <i class="fas fa-crosshairs text-info"></i>
+                <span class="d-none d-sm-inline">Location</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Data Loading Spinner Overlay -->
+    <div id="app-loader" class="text-center py-5 d-none">
+      <div class="spinner-glass mx-auto mb-3"></div>
+      <p class="text-muted fw-semibold">Fetching atmospheric data...</p>
+    </div>
+
+    <!-- ========================================================================== -->
+    <!-- 1. HOME / DASHBOARD TAB                                                    -->
+    <!-- ========================================================================== -->
+    <section id="tab-home" class="tab-content-section active">
+      <div class="row g-4">
+        <!-- Hero Section Banner -->
+        <div class="col-12">
+          <div class="weather-hero-bg glass-card">
+            <!-- Animated Clouds Background -->
+            <div class="cloud-particle cloud-1"></div>
+            <div class="cloud-particle cloud-2"></div>
+            <div class="cloud-particle cloud-3"></div>
+
+            <div class="row align-items-center z-1 position-relative">
+              <div class="col-md-7">
+                <div class="d-flex align-items-center gap-2 mb-2">
+                  <span class="badge glass-pill" id="hero-date-str">Loading date...</span>
+                  <span class="badge glass-pill bg-info text-dark" id="hero-clock">00:00 AM</span>
+                </div>
+                <h1 class="display-4 fw-bold mb-1" id="hero-city-name">New Delhi</h1>
+                <p class="text-muted fs-5 mb-3" id="hero-country-name">India</p>
+                <div class="d-flex align-items-baseline gap-3 mb-2">
+                  <span class="display-2 fw-extrabold" id="hero-temp">28°C</span>
+                  <div>
+                    <span class="fs-4 fw-semibold text-info" id="hero-condition">Sunny</span>
+                    <br>
+                    <span class="text-muted small" id="hero-feels-like">Feels like 30°C</span>
+                  </div>
+                </div>
+                <div class="d-flex gap-2 mt-3">
+                  <button class="glass-btn" id="btn-fav-toggle">
+                    <i class="far fa-heart" id="hero-fav-icon"></i>
+                    <span id="hero-fav-label">Add to Favourites</span>
+                  </button>
+                </div>
+              </div>
+              <div class="col-md-5 text-center mt-4 mt-md-0">
+                <img id="hero-weather-icon" src="https://openweathermap.org/img/wn/01d@4x.png" alt="Weather Icon" class="weather-animated-icon img-fluid">
+                <p class="text-capitalize text-info fw-semibold mt-2" id="hero-weather-desc">Clear Sky</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Summary Cards (4 Columns) -->
+        <div class="col-6 col-md-3">
+          <div class="glass-card text-center">
+            <i class="fas fa-droplet fs-3 text-info mb-2"></i>
+            <h6 class="text-muted mb-1">Humidity</h6>
+            <h4 class="fw-bold mb-0" id="quick-humidity">65%</h4>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="glass-card text-center">
+            <i class="fas fa-wind fs-3 text-cyan mb-2"></i>
+            <h6 class="text-muted mb-1">Wind Speed</h6>
+            <h4 class="fw-bold mb-0" id="quick-wind">14 km/h</h4>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="glass-card text-center">
+            <i class="fas fa-gauge-high fs-3 text-warning mb-2"></i>
+            <h6 class="text-muted mb-1">Pressure</h6>
+            <h4 class="fw-bold mb-0" id="quick-pressure">1013 hPa</h4>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="glass-card text-center">
+            <i class="fas fa-eye fs-3 text-success mb-2"></i>
+            <h6 class="text-muted mb-1">Visibility</h6>
+            <h4 class="fw-bold mb-0" id="quick-visibility">10 km</h4>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================================== -->
+    <!-- 2. CURRENT WEATHER TAB                                                     -->
+    <!-- ========================================================================== -->
+    <section id="tab-current" class="tab-content-section d-none">
+      <div class="row g-4">
+        <div class="col-12 col-lg-6">
+          <div class="glass-card h-100">
+            <h4 class="fw-bold mb-4"><i class="fas fa-location-dot text-info me-2"></i>Current Weather Overview</h4>
+            <div class="d-flex align-items-center justify-content-between mb-4">
+              <div>
+                <h2 class="fw-bold mb-0" id="current-city-title">London, UK</h2>
+                <p class="text-muted" id="current-date-subtitle">Sunday, July 26, 2026</p>
+                <div class="display-3 fw-bold my-2" id="current-temp-val">22°C</div>
+                <p class="fs-5 text-info mb-0" id="current-cond-val">Partly Cloudy</p>
+              </div>
+              <div class="text-center">
+                <img id="current-icon-img" src="https://openweathermap.org/img/wn/02d@4x.png" alt="Weather condition" class="weather-animated-icon">
+              </div>
+            </div>
+            
+            <div class="row g-3">
+              <div class="col-6">
+                <div class="glass-card py-2 px-3">
+                  <small class="text-muted">High / Low</small>
+                  <div class="fw-bold fs-5" id="current-temp-range">26°C / 18°C</div>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="glass-card py-2 px-3">
+                  <small class="text-muted">Feels Like</small>
+                  <div class="fw-bold fs-5" id="current-feels-val">24°C</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sun Position & Sunrise/Sunset Card -->
+        <div class="col-12 col-lg-6">
+          <div class="glass-card h-100">
+            <h4 class="fw-bold mb-4"><i class="fas fa-sun text-warning me-2"></i>Solar Schedule</h4>
+            <div class="row text-center my-4">
+              <div class="col-6">
+                <i class="fas fa-sun-plant-wilt fs-1 text-warning mb-2"></i>
+                <h6 class="text-muted mb-1">Sunrise</h6>
+                <h3 class="fw-bold" id="current-sunrise">06:05 AM</h3>
+              </div>
+              <div class="col-6">
+                <i class="fas fa-moon fs-1 text-primary mb-2"></i>
+                <h6 class="text-muted mb-1">Sunset</h6>
+                <h3 class="fw-bold" id="current-sunset">07:15 PM</h3>
+              </div>
+            </div>
+
+            <!-- UV Index Summary -->
+            <div class="glass-card mt-3">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <h6 class="text-muted mb-1"><i class="fas fa-sun-o text-warning me-1"></i> UV Index</h6>
+                  <h4 class="fw-bold mb-0" id="current-uv">6 (High)</h4>
+                </div>
+                <span class="badge bg-warning text-dark px-3 py-2 fs-6">Moderate Protection Needed</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================================== -->
+    <!-- 3. HOURLY FORECAST TAB                                                     -->
+    <!-- ========================================================================== -->
+    <section id="tab-hourly" class="tab-content-section d-none">
+      <div class="glass-card mb-4">
+        <h4 class="fw-bold mb-3"><i class="fas fa-clock text-info me-2"></i>Next 24-Hour Forecast Timeline</h4>
+        <!-- Horizontally Scrollable Cards Container -->
+        <div class="hourly-scroll-container" id="hourly-cards-wrapper">
+          <!-- Dynamically Populated Cards -->
+        </div>
+      </div>
+
+      <!-- Chart.js Graph Container -->
+      <div class="glass-card">
+        <h5 class="fw-bold mb-3"><i class="fas fa-chart-line text-info me-2"></i>Hourly Temperature & Rain Trend</h5>
+        <div style="height: 320px; position: relative;">
+          <canvas id="chart-hourly"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================================== -->
+    <!-- 4. 7-DAY FORECAST TAB                                                      -->
+    <!-- ========================================================================== -->
+    <section id="tab-weekly" class="tab-content-section d-none">
+      <div class="row g-4">
+        <div class="col-12 col-lg-5">
+          <div class="glass-card h-100">
+            <h4 class="fw-bold mb-4"><i class="fas fa-calendar-week text-info me-2"></i>7-Day Weather Outlook</h4>
+            <div id="weekly-cards-wrapper">
+              <!-- Dynamically Populated Day Cards -->
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-lg-7">
+          <div class="glass-card h-100">
+            <h4 class="fw-bold mb-4"><i class="fas fa-chart-area text-info me-2"></i>Weekly Temperature Trends (Min vs Max)</h4>
+            <div style="height: 380px; position: relative;">
+              <canvas id="chart-weekly"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================================== -->
+    <!-- 5. AIR QUALITY (AQI) TAB                                                   -->
+    <!-- ========================================================================== -->
+    <section id="tab-aqi" class="tab-content-section d-none">
+      <div class="row g-4">
+        <!-- AQI Summary Card -->
+        <div class="col-12 col-lg-4">
+          <div class="glass-card text-center h-100 d-flex flex-column justify-content-center">
+            <h5 class="text-muted mb-2">Air Quality Index (AQI)</h5>
+            <div class="display-1 fw-extrabold my-2" id="aqi-value-num">2</div>
+            <div>
+              <span class="aqi-badge aqi-bg-2 fs-5" id="aqi-status-badge">Moderate</span>
+            </div>
+            <p class="text-muted mt-3 mb-0" id="aqi-desc">Air quality is acceptable; however, for some pollutants there may be a moderate health concern for sensitive individuals.</p>
+          </div>
+        </div>
+
+        <!-- Pollutant Breakdown Grid -->
+        <div class="col-12 col-lg-8">
+          <div class="glass-card h-100">
+            <h4 class="fw-bold mb-4"><i class="fas fa-smog text-info me-2"></i>Pollutant Concentration Breakdown</h4>
+            <div class="row g-4">
+              <!-- PM2.5 -->
+              <div class="col-6 col-md-4">
+                <div class="glass-card py-3 px-3">
+                  <div class="d-flex justify-content-between mb-1">
+                    <span class="fw-bold">PM 2.5</span>
+                    <span class="text-info" id="aqi-pm25">18 µg/m³</span>
+                  </div>
+                  <div class="aqi-metric-bar">
+                    <div class="aqi-metric-progress aqi-bg-2" id="bar-pm25" style="width: 35%;"></div>
+                  </div>
+                  <small class="text-muted mt-1 d-block">Fine Particulate</small>
+                </div>
+              </div>
+
+              <!-- PM10 -->
+              <div class="col-6 col-md-4">
+                <div class="glass-card py-3 px-3">
+                  <div class="d-flex justify-content-between mb-1">
+                    <span class="fw-bold">PM 10</span>
+                    <span class="text-info" id="aqi-pm10">35 µg/m³</span>
+                  </div>
+                  <div class="aqi-metric-bar">
+                    <div class="aqi-metric-progress aqi-bg-2" id="bar-pm10" style="width: 42%;"></div>
+                  </div>
+                  <small class="text-muted mt-1 d-block">Coarse Particulate</small>
+                </div>
+              </div>
+
+              <!-- CO -->
+              <div class="col-6 col-md-4">
+                <div class="glass-card py-3 px-3">
+                  <div class="d-flex justify-content-between mb-1">
+                    <span class="fw-bold">CO</span>
+                    <span class="text-info" id="aqi-co">220 µg/m³</span>
+                  </div>
+                  <div class="aqi-metric-bar">
+                    <div class="aqi-metric-progress aqi-bg-1" id="bar-co" style="width: 20%;"></div>
+                  </div>
+                  <small class="text-muted mt-1 d-block">Carbon Monoxide</small>
+                </div>
+              </div>
+
+              <!-- NO2 -->
+              <div class="col-6 col-md-4">
+                <div class="glass-card py-3 px-3">
+                  <div class="d-flex justify-content-between mb-1">
+                    <span class="fw-bold">NO₂</span>
+                    <span class="text-info" id="aqi-no2">15 µg/m³</span>
+                  </div>
+                  <div class="aqi-metric-bar">
+                    <div class="aqi-metric-progress aqi-bg-1" id="bar-no2" style="width: 15%;"></div>
+                  </div>
+                  <small class="text-muted mt-1 d-block">Nitrogen Dioxide</small>
+                </div>
+              </div>
+
+              <!-- Ozone O3 -->
+              <div class="col-6 col-md-4">
+                <div class="glass-card py-3 px-3">
+                  <div class="d-flex justify-content-between mb-1">
+                    <span class="fw-bold">Ozone (O₃)</span>
+                    <span class="text-info" id="aqi-o3">42 µg/m³</span>
+                  </div>
+                  <div class="aqi-metric-bar">
+                    <div class="aqi-metric-progress aqi-bg-2" id="bar-o3" style="width: 30%;"></div>
+                  </div>
+                  <small class="text-muted mt-1 d-block">Ground Ozone</small>
+                </div>
+              </div>
+
+              <div class="col-6 col-md-4">
+                <div class="glass-card py-3 px-3 text-center">
+                  <small class="text-muted">Air Pollution Rating</small>
+                  <div class="fw-bold text-success fs-5 mt-1">Acceptable</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================================== -->
+    <!-- 6. WEATHER DETAILS TAB                                                     -->
+    <!-- ========================================================================== -->
+    <section id="tab-details" class="tab-content-section d-none">
+      <h4 class="fw-bold mb-4"><i class="fas fa-sliders text-info me-2"></i>Comprehensive Atmospheric Metrics</h4>
+      <div class="row g-4">
+        <!-- Humidity -->
+        <div class="col-6 col-md-4 col-lg-3">
+          <div class="glass-card detail-card">
+            <div class="detail-icon"><i class="fas fa-droplet"></i></div>
+            <div>
+              <h6 class="text-muted mb-1">Humidity</h6>
+              <h3 class="fw-bold" id="detail-humidity">62%</h3>
+              <small class="text-muted" id="detail-dewpoint">Dew point: 16°C</small>
+            </div>
+          </div>
+        </div>
+
+        <!-- Wind Speed & Direction -->
+        <div class="col-6 col-md-4 col-lg-3">
+          <div class="glass-card detail-card text-center">
+            <h6 class="text-muted mb-2">Wind Direction</h6>
+            <div class="compass-container my-2">
+              <i class="fas fa-location-arrow compass-arrow" id="detail-compass"></i>
+            </div>
+            <div>
+              <h4 class="fw-bold mb-0" id="detail-windspeed">14 km/h</h4>
+              <small class="text-muted" id="detail-winddeg">135° SE</small>
+            </div>
+          </div>
+        </div>
+
+        <!-- Atmospheric Pressure -->
+        <div class="col-6 col-md-4 col-lg-3">
+          <div class="glass-card detail-card">
+            <div class="detail-icon"><i class="fas fa-gauge"></i></div>
+            <div>
+              <h6 class="text-muted mb-1">Air Pressure</h6>
+              <h3 class="fw-bold" id="detail-pressure">1013 hPa</h3>
+              <small class="text-muted">Standard Sea Level</small>
+            </div>
+          </div>
+        </div>
+
+        <!-- Visibility -->
+        <div class="col-6 col-md-4 col-lg-3">
+          <div class="glass-card detail-card">
+            <div class="detail-icon"><i class="fas fa-eye"></i></div>
+            <div>
+              <h6 class="text-muted mb-1">Visibility</h6>
+              <h3 class="fw-bold" id="detail-visibility">10 km</h3>
+              <small class="text-muted">Clear sight distance</small>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cloud Cover -->
+        <div class="col-6 col-md-4 col-lg-3">
+          <div class="glass-card detail-card">
+            <div class="detail-icon"><i class="fas fa-cloud"></i></div>
+            <div>
+              <h6 class="text-muted mb-1">Cloud Cover</h6>
+              <h3 class="fw-bold" id="detail-clouds">35%</h3>
+              <small class="text-muted">Scattered Clouds</small>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dew Point -->
+        <div class="col-6 col-md-4 col-lg-3">
+          <div class="glass-card detail-card">
+            <div class="detail-icon"><i class="fas fa-temperature-arrow-down"></i></div>
+            <div>
+              <h6 class="text-muted mb-1">Dew Point</h6>
+              <h3 class="fw-bold" id="detail-dewval">16°C</h3>
+              <small class="text-muted">Comfortable level</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================================== -->
+    <!-- 7. INTERACTIVE MAP TAB                                                     -->
+    <!-- ========================================================================== -->
+    <section id="tab-map" class="tab-content-section d-none">
+      <div class="glass-card">
+        <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+          <h4 class="fw-bold mb-0"><i class="fas fa-map-location-dot text-info me-2"></i>Interactive Weather Map</h4>
+          <div class="d-flex gap-1" id="map-layer-controls">
+            <button class="glass-btn glass-btn-active btn-sm" data-layer="clouds">Clouds</button>
+            <button class="glass-btn btn-sm" data-layer="rain">Rainfall</button>
+            <button class="glass-btn btn-sm" data-layer="temp">Temperature</button>
+            <button class="glass-btn btn-sm" data-layer="wind">Wind</button>
+          </div>
+        </div>
+        
+        <!-- Leaflet Map Container -->
+        <div id="weather-map-container"></div>
+      </div>
+    </section>
+
+    <!-- ========================================================================== -->
+    <!-- 8. FAVOURITE CITIES TAB                                                    -->
+    <!-- ========================================================================== -->
+    <section id="tab-favs" class="tab-content-section d-none">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="fw-bold mb-0"><i class="fas fa-heart text-danger me-2"></i>Saved Favourite Cities</h4>
+        <small class="text-muted">Saved locally in browser storage</small>
+      </div>
+
+      <div class="row g-4" id="fav-cities-grid">
+        <!-- Dynamically Populated Cards -->
+      </div>
+    </section>
+
+    <!-- ========================================================================== -->
+    <!-- 9. SEARCH HISTORY TAB                                                      -->
+    <!-- ========================================================================== -->
+    <section id="tab-history" class="tab-content-section d-none">
+      <div class="glass-card">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h4 class="fw-bold mb-0"><i class="fas fa-history text-info me-2"></i>Recently Searched Locations</h4>
+          <button class="glass-btn btn-sm text-danger" id="btn-clear-history">
+            <i class="fas fa-trash"></i> Clear History
+          </button>
+        </div>
+
+        <div class="d-flex flex-wrap gap-2" id="history-chips-container">
+          <!-- Dynamically Populated Chips -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================================== -->
+    <!-- 10. SETTINGS TAB                                                           -->
+    <!-- ========================================================================== -->
+    <section id="tab-settings" class="tab-content-section d-none">
+      <div class="row justify-content-center">
+        <div class="col-12 col-md-10 col-lg-8">
+          <div class="glass-card">
+            <h4 class="fw-bold mb-4"><i class="fas fa-gear text-info me-2"></i>Application Preferences</h4>
+            
+            <!-- Dark / Light Theme Toggle -->
+            <div class="d-flex justify-content-between align-items-center py-3 border-bottom border-secondary">
+              <div>
+                <h6 class="fw-bold mb-1">Theme Mode</h6>
+                <small class="text-muted">Toggle between sleek dark mode and vibrant light mode</small>
+              </div>
+              <div class="form-check form-switch fs-4">
+                <input class="form-check-input" type="checkbox" id="switch-theme">
+              </div>
+            </div>
+
+            <!-- Temperature Units Toggle -->
+            <div class="d-flex justify-content-between align-items-center py-3 border-bottom border-secondary">
+              <div>
+                <h6 class="fw-bold mb-1">Temperature Unit</h6>
+                <small class="text-muted">Display temperatures in Celsius (°C) or Fahrenheit (°F)</small>
+              </div>
+              <div class="btn-group" role="group">
+                <button type="button" class="glass-btn btn-sm" id="unit-c-btn">°C</button>
+                <button type="button" class="glass-btn btn-sm" id="unit-f-btn">°F</button>
+              </div>
+            </div>
+
+            <!-- Language Selector -->
+            <div class="d-flex justify-content-between align-items-center py-3 border-bottom border-secondary">
+              <div>
+                <h6 class="fw-bold mb-1">Display Language</h6>
+                <small class="text-muted">Select application interface language</small>
+              </div>
+              <select class="form-select glass-input w-auto" id="select-language">
+                <option value="en">English (US)</option>
+                <option value="hi">Hindi (हिंदी)</option>
+                <option value="es">Spanish (Español)</option>
+                <option value="fr">French (Français)</option>
+              </select>
+            </div>
+
+            <!-- Custom OpenWeatherMap API Key -->
+            <div class="py-3">
+              <h6 class="fw-bold mb-1">Custom OpenWeatherMap API Key</h6>
+              <small class="text-muted d-block mb-2">Provide your custom API Key or use built-in smart mock fallback</small>
+              <div class="input-group">
+                <input type="text" id="input-api-key" class="form-control glass-input" placeholder="Enter OpenWeatherMap API Key...">
+                <button class="glass-btn glass-btn-active" id="btn-save-key">Save Key</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================================== -->
+    <!-- 11. ABOUT TAB                                                              -->
+    <!-- ========================================================================== -->
+    <section id="tab-about" class="tab-content-section d-none">
+      <div class="row justify-content-center g-4">
+        <div class="col-12 col-lg-8">
+          <div class="glass-card">
+            <div class="d-flex align-items-center gap-3 mb-4">
+              <div class="p-3 bg-info bg-opacity-20 rounded-circle text-info fs-2">
+                <i class="fas fa-cloud-sun"></i>
+              </div>
+              <div>
+                <h3 class="fw-bold mb-0">SkyPulse Weather Forecast Application</h3>
+                <span class="badge glass-pill bg-info text-dark mt-1">Weather Dashboard Pro</span>
+              </div>
+            </div>
+
+            <h5 class="fw-bold text-info mb-2">Project Overview</h5>
+            <p class="text-muted">
+              SkyPulse is a modern, responsive, high-performance Weather Forecast web application engineered for real-time atmospheric insights. It delivers real-time meteorological data, 24-hour hourly forecasts, 7-day extended outlooks, Air Quality Index (AQI) breakdowns, interactive Leaflet weather map overlays, and personal favourite locations.
+            </p>
+
+            <h5 class="fw-bold text-info mb-3 mt-4">Technology Stack</h5>
+            <div class="d-flex flex-wrap gap-2 mb-4">
+              <span class="badge glass-pill"><i class="fab fa-html5 text-danger me-1"></i> HTML5</span>
+              <span class="badge glass-pill"><i class="fab fa-css3-alt text-primary me-1"></i> CSS3 / Glassmorphism</span>
+              <span class="badge glass-pill"><i class="fab fa-js text-warning me-1"></i> JavaScript (ES6+)</span>
+              <span class="badge glass-pill"><i class="fab fa-bootstrap text-purple me-1"></i> Bootstrap 5.3</span>
+              <span class="badge glass-pill"><i class="fas fa-chart-line text-info me-1"></i> Chart.js 4</span>
+              <span class="badge glass-pill"><i class="fas fa-map-location-dot text-success me-1"></i> Leaflet.js</span>
+              <span class="badge glass-pill"><i class="fas fa-cloud text-cyan me-1"></i> OpenWeatherMap API</span>
+            </div>
+
+            <h5 class="fw-bold text-info mb-2">Key System Features</h5>
+            <ul class="text-muted">
+              <li>Glassmorphism responsive UI with dynamic weather animations.</li>
+              <li>Intelligent API fallback engine for 100% reliable offline/demo presentation.</li>
+              <li>Geolocation API auto-detection with custom city search.</li>
+              <li>Interactive Chart.js hourly & weekly temperature trends.</li>
+              <li>Interactive Leaflet map with Rain, Cloud, Temperature, and Wind layers.</li>
+              <li>Persistent Favourite Cities and Recent Search History via LocalStorage.</li>
+              <li>Dark/Light Theme and °C/°F Temperature Unit switcher.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container-custom" id="toast-container"></div>
+
+  <!-- ========================================================================== -->
+  <!-- External JS Libraries                                                      -->
+  <!-- ========================================================================== -->
+  <!-- Bootstrap 5 JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Leaflet JS CDN -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- Application Modules (Sequential loading for standalone file:// support) -->
+  <script src="js/storage.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/chart-manager.js"></script>
+  <script src="js/map-manager.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
